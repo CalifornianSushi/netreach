@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-export default function ChatPage() {
+function ChatContent() {
   const searchParams = useSearchParams();
   const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]);
   const [input, setInput] = useState('');
@@ -20,7 +20,7 @@ export default function ChatPage() {
     if (latency && jitter && bandwidth && loss) {
       setInput(prefillMessage);
     }
-  }, [latency, jitter, bandwidth, loss]);
+  }, [latency, jitter, bandwidth, loss, prefillMessage]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -62,5 +62,13 @@ export default function ChatPage() {
         {loading ? 'Thinking...' : 'Send'}
       </button>
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<p>Loading assistant...</p>}>
+      <ChatContent />
+    </Suspense>
   );
 }
